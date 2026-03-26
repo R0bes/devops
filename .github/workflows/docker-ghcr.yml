@@ -20,7 +20,7 @@ on:
         type: boolean
         default: true
       pre_build:
-        description: Optional shell script; runs after checkout, before Docker build (use caller secrets in YAML if needed)
+        description: Optional shell script; runs after checkout, before Docker build. Do not put secrets in this string—use inherited secrets (e.g. HOMEPAGE_CONTENT_PAT) via the Pre-build step env.
         type: string
         default: ""
       pre_build_working_directory:
@@ -40,6 +40,10 @@ jobs:
       - name: Pre-build
         if: ${{ inputs.pre_build != '' }}
         working-directory: ${{ inputs.pre_build_working_directory }}
+        env:
+          # Caller: secrets: inherit — optional repo secrets available here (never pass secrets via pre_build input).
+          HOMEPAGE_CONTENT_PAT: ${{ secrets.HOMEPAGE_CONTENT_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: ${{ inputs.pre_build }}
 
       - uses: docker/setup-buildx-action@v3
