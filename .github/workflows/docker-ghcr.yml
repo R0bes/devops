@@ -27,6 +27,10 @@ on:
         description: Working directory for the pre_build step (repository-relative)
         type: string
         default: "."
+      docker_build_args:
+        description: Optional Docker BuildKit build-args (newline-separated KEY=value)
+        type: string
+        default: ""
 
 jobs:
   build-and-push:
@@ -77,5 +81,6 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ inputs.docker_build_args }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
